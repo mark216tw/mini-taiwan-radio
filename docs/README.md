@@ -1,6 +1,6 @@
 # mini台灣電台文件總覽
 
-本目錄收錄 mini台灣電台的產品規格、使用說明、架構設計、開發維護與測試文件。根目錄 [`README.md`](../README.md) 提供專案入口，授權條款以根目錄 [`LICENSE`](../LICENSE) 為準。
+本目錄收錄 mini台灣電台的產品規格、使用說明、架構設計、開發維護與測試文件。根目錄 [`README.md`](https://github.com/mark216tw/mini-taiwan-radio/blob/main/README.md) 提供專案入口，授權條款以根目錄 [`LICENSE`](https://github.com/mark216tw/mini-taiwan-radio/blob/main/LICENSE) 為準。
 
 ## 文件索引
 

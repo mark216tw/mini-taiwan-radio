@@ -23,8 +23,8 @@
 | 用途 | 路徑 |
 |---|---|
 | SVG 原稿 | [`app-icon.svg`](app-icon.svg) |
-| Android 前景 | [`ic_launcher_foreground.xml`](../../app/src/main/res/drawable/ic_launcher_foreground.xml) |
-| Android 背景 | [`ic_launcher_background.xml`](../../app/src/main/res/drawable/ic_launcher_background.xml) |
-| Adaptive Icon | [`ic_launcher.xml`](../../app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml) |
+| Android 前景 | [`ic_launcher_foreground.xml`](https://github.com/mark216tw/mini-taiwan-radio/blob/main/app/src/main/res/drawable/ic_launcher_foreground.xml) |
+| Android 背景 | [`ic_launcher_background.xml`](https://github.com/mark216tw/mini-taiwan-radio/blob/main/app/src/main/res/drawable/ic_launcher_background.xml) |
+| Adaptive Icon | [`ic_launcher.xml`](https://github.com/mark216tw/mini-taiwan-radio/blob/main/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml) |
 
 SVG 是設計原稿，Android Vector Drawable 是實際執行資源。兩者使用相同構圖與色彩，但 Android 資源可為 Adaptive Icon 的視覺置中進行位置微調。修改顏色或主要路徑時應同步檢查兩者，並在圓形、圓角方形等不同 Launcher 遮罩下確認安全區沒有被裁切。
