@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">mini台灣電台</string>
+    <string name="app_tagline">把台灣電台帶著走</string>
+    <string name="play">播放</string>
+    <string name="stop">停止</string>
+    <string name="loading">正在更新電台清單…</string>
+    <string name="refresh">重新整理</string>
+</resources>

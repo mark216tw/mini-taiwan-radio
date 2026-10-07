@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.MiniTaiwanRadio" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#FF765F</item>
+        <item name="android:navigationBarColor">#FFF9E8</item>
+        <item name="android:statusBarColor">#FFF9E8</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

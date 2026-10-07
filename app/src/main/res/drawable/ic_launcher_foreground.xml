@@ -1,0 +1,43 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- A simple radio and two bold waves fit inside the 66dp safe zone. -->
+    <path
+        android:pathData="M54,42 L54,35"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#12304A"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M54,30m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#FF765F"
+        android:strokeColor="#12304A"
+        android:strokeWidth="3" />
+    <path
+        android:pathData="M35,41 L73,41 C78.5,41 83,45.5 83,51 L83,65 C83,70.5 78.5,75 73,75 L35,75 C29.5,75 25,70.5 25,65 L25,51 C25,45.5 29.5,41 35,41 Z"
+        android:fillColor="#12304A" />
+    <path
+        android:pathData="M37,49 L71,49 C73.8,49 76,51.2 76,54 L76,63 C76,65.8 73.8,68 71,68 L37,68 C34.2,68 32,65.8 32,63 L32,54 C32,51.2 34.2,49 37,49 Z"
+        android:fillColor="#FFF1B8" />
+    <path
+        android:pathData="M44,52m-6.5,0a6.5,6.5 0,1 1,13 0a6.5,6.5 0,1 1,-13 0"
+        android:fillColor="#FF765F" />
+    <path
+        android:pathData="M64,54.5m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#12304A" />
+    <path
+        android:pathData="M77,45 C84,52 84,61 77,68"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF765F"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M77,37 C84,47 84,66 77,76"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#3D91D4"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+</vector>

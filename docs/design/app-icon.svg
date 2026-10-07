@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
+  <!-- 108dp master artwork. The 72dp crop zone is x/y 18..90. -->
+  <rect width="108" height="108" rx="24" fill="#FFF1B8"/>
+  <path d="M54 42V35" fill="none" stroke="#12304A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="54" cy="30" r="3" fill="#FF765F" stroke="#12304A" stroke-width="3"/>
+  <rect x="25" y="41" width="58" height="34" rx="10" fill="#12304A"/>
+  <rect x="32" y="49" width="44" height="19" rx="5" fill="#FFF1B8"/>
+  <circle cx="44" cy="58.5" r="6.5" fill="#FF765F"/>
+  <circle cx="64" cy="58.5" r="4" fill="#12304A"/>
+  <path d="M77 45c7 7 7 16 0 23" fill="none" stroke="#FF765F" stroke-width="5" stroke-linecap="round"/>
+  <path d="M77 37c7 10 7 29 0 39" fill="none" stroke="#3D91D4" stroke-width="5" stroke-linecap="round"/>
+</svg>
