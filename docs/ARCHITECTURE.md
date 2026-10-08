@@ -16,7 +16,7 @@ mini台灣電台是單模組、單 Activity 的 Android 應用程式。UI 使用
 | 非同步 | Kotlin Coroutines |
 | 資料格式 | JSON（`org.json`） |
 | 本機儲存 | SharedPreferences、APK assets |
-| 遠端資料 | GitHub Pages、`HttpURLConnection` |
+| 遠端資料 | GitHub Gist、`HttpURLConnection` |
 | Android | minSdk 26、targetSdk 35、compileSdk 35 |
 
 ## 3. 元件圖
@@ -34,7 +34,7 @@ flowchart TD
     AppContent --> Repo[StationRepository]
     Repo --> Cache[(SharedPreferences<br/>station_cache)]
     Repo --> Assets[assets/stations.json]
-    Repo --> Remote[GitHub Pages<br/>stations.v1.json]
+    Repo --> Remote[GitHub Gist<br/>stations.v1.json]
 
     Activity --> Prefs[UiPreferences]
     Prefs --> UiStore[(SharedPreferences<br/>ui_preferences)]
@@ -85,14 +85,14 @@ flowchart LR
     Cache -->|否| Assets{內建清單有效且有可見電台?}
     Assets -->|是| Show
     Assets -->|否| Download[下載遠端清單]
-    Download --> Parse[解析並過濾 noshow]
+    Download --> Parse[解析電台資料]
     Parse --> Save[寫入快取]
     Save --> Show
 ```
 
 Repository 的執行時優先順序是「快取 → assets → 遠端」。遠端檔案是資料維護的權威來源，但不是每次啟動的第一讀取來源。
 
-手動更新會直接下載遠端資料。下載與解析成功後，完整 JSON 寫入快取，過濾後的可見清單立即更新 UI。
+手動更新會直接下載遠端資料。下載與解析成功後，完整 JSON 寫入快取，電台清單立即更新 UI。
 
 ## 7. 播放架構
 
@@ -101,7 +101,7 @@ Repository 的執行時優先順序是「快取 → assets → 遠端」。遠�
 3. Activity 以 explicit Intent 和 `ACTION_PLAY` 啟動 `PlaybackService`。
 4. Service 建立 MediaItem，設定電台 ID、串流 URI 與媒體 metadata。
 5. ExoPlayer 執行 `prepare()` 與 `play()`。
-6. MediaSession 將狀態提供給 MediaController、系統媒體通知及鎖定畫面。
+6. MediaSession 將狀態提供給 MediaController、系統媒體通知及鎖定畫面，並以 session activity PendingIntent 將通知內容點擊導向 `MainActivity`。
 7. Activity 的 Player listener 將狀態轉為 `PlaybackUiState`，驅動卡片與迷你播放器。
 
 切台時沿用同一個 ExoPlayer，以新的 MediaItem 取代舊來源。
@@ -109,6 +109,7 @@ Repository 的執行時優先順序是「快取 → assets → 遠端」。遠�
 ## 8. 播放服務生命週期
 
 - Service 建立時初始化 ExoPlayer 與 MediaSession。
+- MediaSession 使用 immutable PendingIntent 開啟 `MainActivity`，並以 clear-top／single-top flags 優先沿用既有 Activity。
 - 按 Home 或鎖定螢幕不會停止播放。
 - App 內停止會呼叫 player stop、傳送 `ACTION_STOP` 並執行 `stopSelf()`。
 - 從最近使用清單移除時，`onTaskRemoved()` 停止播放器與服務。

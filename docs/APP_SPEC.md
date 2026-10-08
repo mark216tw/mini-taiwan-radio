@@ -5,7 +5,7 @@
 - App 名稱：mini台灣電台
 - 平台：Android
 - Application ID：`com.mark216tw.minitaiwanradio`
-- 目前版本：`1.0.0-prerelease`（versionCode 1）
+- 目前版本：`1.0.0-prerelease.2`（versionCode 2）
 - 最低 Android 版本：Android 8.0（API 26）
 - Target SDK：API 35
 - 開發技術：Kotlin、Jetpack Compose、Material 3、AndroidX Media3
@@ -14,13 +14,13 @@
 
 ### 2.1 資料來源
 
-電台資料的遠端權威來源為 GitHub Pages：
+電台資料的遠端權威來源為 GitHub Gist：
 
 ```text
-https://mark216tw.github.io/mini-taiwan-radio/data/stations.v1.json
+https://gist.githubusercontent.com/mark216tw/8de9db577e248f2bce47e2e3a31c02f8/raw
 ```
 
-對應專案檔案：
+專案資料快照：
 
 ```text
 docs/data/stations.v1.json
@@ -32,13 +32,13 @@ APK 內建備援清單：
 app/src/main/assets/stations.json
 ```
 
-目前清單包含 30 個台灣電台項目。直播網址為候選資料，上架前仍須確認穩定性、官方來源及第三方使用授權。
+目前清單包含 28 個台灣電台項目。直播網址為候選資料，上架前仍須確認穩定性、官方來源及第三方使用授權。
 
 ### 2.2 載入順序
 
 1. 每次開啟 App 時優先使用上次成功下載的本機快取。
 2. 沒有有效快取時，使用 APK 內建 `stations.json`。
-3. 本機快取與 APK 內建清單都沒有可顯示電台時，才自動下載 GitHub Pages 遠端清單。
+3. 本機快取與 APK 內建清單都沒有可顯示電台時，才自動下載 GitHub Gist 遠端清單。
 4. 自動下載成功後，更新畫面並寫入本機快取；若下載失敗則顯示無資料狀態，不影響 App 運作。
 
 ### 2.3 手動更新
@@ -46,7 +46,7 @@ app/src/main/assets/stations.json
 設定頁提供文字按鈕「更新電台清單」。
 
 - 更新期間按鈕停用並顯示「更新中...」。
-- 更新成功顯示「更新成功，共 N 個電台」，數量不包含 `noshow: true` 的項目。
+- 更新成功顯示「更新成功，共 N 個電台」。
 - 更新失敗顯示「更新失敗，已保留目前的電台資料」。
 - 更新成功後主畫面立即套用新清單。
 
@@ -62,8 +62,7 @@ app/src/main/assets/stations.json
   "streamUrl": "https://example.com/live",
   "websiteUrl": "https://example.com/",
   "logoUrl": "",
-  "enabled": true,
-  "noshow": false
+  "enabled": true
 }
 ```
 
@@ -72,8 +71,6 @@ app/src/main/assets/stations.json
 - `id`：電台唯一識別值，也用於最愛與排序資料。
 - `streamUrl`：直播音訊網址。
 - `enabled: false`：電台仍顯示，但顯示「準備中」且不可播放。
-- `noshow: true`：電台不顯示在清單中。
-- 未提供 `noshow` 時預設為 `false`。
 
 ## 3. 主畫面
 
@@ -142,6 +139,7 @@ app/src/main/assets/stations.json
 - 按 Home 回到桌面時繼續播放。
 - 鎖定螢幕時繼續播放。
 - 使用 MediaSession 與系統媒體通知控制播放。
+- 點擊媒體通知內容會開啟 App，並優先回到既有的主畫面 Activity。
 - Android 13 以上會要求通知權限。
 - 從最近使用的 App 清單刷掉 App 時停止播放、停止播放服務並移除通知。
 - 重新開啟 App 時不會自動恢復上次播放。
@@ -218,7 +216,7 @@ App 使用 `SharedPreferences` 儲存：
 - 顯示模式
 - 主題色彩
 
-App 不會將使用者最愛或主題設定上傳至 GitHub Pages。
+App 不會將使用者最愛或主題設定上傳至 GitHub Gist 或其他遠端服務。
 
 ## 11. 權限
 
@@ -257,4 +255,4 @@ gradle :app:assemblePrerelease
 app/build/outputs/apk/prerelease/app-prerelease.apk
 ```
 
-目前 Pre-release 版本為 `1.0.0-prerelease`，僅供測試，不代表正式上線版本。
+目前 Pre-release 版本為 `1.0.0-prerelease.2`，僅供測試，不代表正式上線版本。

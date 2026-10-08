@@ -4,8 +4,8 @@
 
 | 用途 | 位置 |
 |---|---|
-| GitHub Pages 發布檔 | `docs/data/stations.v1.json` |
-| 遠端網址 | `https://mark216tw.github.io/mini-taiwan-radio/data/stations.v1.json` |
+| GitHub Gist 權威來源 | `https://gist.githubusercontent.com/mark216tw/8de9db577e248f2bce47e2e3a31c02f8/raw` |
+| 專案資料快照 | `docs/data/stations.v1.json` |
 | APK 內建備援 | `app/src/main/assets/stations.json` |
 | App 本機快取 | SharedPreferences `station_cache/stations_json` |
 
@@ -41,8 +41,7 @@
   "streamUrl": "https://example.com/live",
   "websiteUrl": "https://example.com/",
   "logoUrl": "",
-  "enabled": true,
-  "noshow": false
+  "enabled": true
 }
 ```
 
@@ -57,15 +56,12 @@
 | `websiteUrl` | 否 | `""` | 已載入 model，目前 UI 未使用 |
 | `logoUrl` | 否 | `""` | 已載入 model，目前 UI 未使用 |
 | `enabled` | 否 | `true` | `false` 時顯示但不可播放 |
-| `noshow` | 否 | `false` | `true` 時完全不顯示，且不計入更新成功數量 |
 
-## 4. `enabled` 與 `noshow` 的選擇
+## 4. `enabled` 的使用
 
-- 尚未取得串流，但希望使用者知道電台正在準備：`enabled: false`、`noshow: false`。
-- 資料待查核、不希望出現在 App：`noshow: true`。
-- 可正常播放：`enabled: true`、`noshow: false`，並提供非空 `streamUrl`。
-
-若 `noshow: true`，其他欄位不會進入畫面模型。
+- 尚未取得串流但仍需顯示電台：使用 `enabled: false`，畫面顯示「準備中」。
+- 可正常播放：使用 `enabled: true`，並提供非空 `streamUrl`。
+- 不應顯示的項目直接從電台資料中移除。
 
 ## 5. 新增或修改電台
 
@@ -93,7 +89,7 @@
 - 每個 `name` 非空。
 - `enabled: true` 的可見項目具有可播放 URL。
 - URL scheme 僅使用預期的 HTTP 或 HTTPS。
-- 手動更新顯示的數量等於 `noshow != true` 的項目數。
+- 手動更新顯示的數量等於 `stations` array 的項目數。
 - `docs/data/stations.v1.json` 與 `app/src/main/assets/stations.json` 內容同步。
 
 PowerShell 可用下列方式確認兩檔案是否一致：
@@ -105,7 +101,6 @@ git diff --no-index -- docs/data/stations.v1.json app/src/main/assets/stations.j
 ## 8. 快取行為
 
 - 手動或必要的自動下載成功後，App 將完整 JSON 原文寫入 SharedPreferences。
-- 解析時才排除 `noshow: true`。
 - 快取目前沒有期限、ETag 或版本比較。
 - 清除 App 資料或解除安裝會移除快取；Android 系統備份還原行為依裝置設定而定。
 

@@ -29,7 +29,7 @@
 - App 啟動不閃退。
 - 檢查輸出 `app/build/outputs/apk/debug/app-debug.apk`。
 - 檢查測試發行輸出 `app/build/outputs/apk/prerelease/app-prerelease.apk`。
-- 確認 Pre-release APK 版本為 `1.0.0-prerelease`，並使用 Debug 憑證簽署。
+- 確認 Pre-release APK 版本為 `1.0.0-prerelease.2`，並使用 Debug 憑證簽署。
 
 ## 4. 電台資料
 
@@ -46,8 +46,6 @@
 - 必要欄位 `id`、`name` 可正常解析。
 - 選填字串缺少時使用空字串。
 - 缺少 `enabled` 時預設為 `true`。
-- 缺少 `noshow` 時預設為 `false`。
-- `noshow: true` 不進入畫面。
 - `enabled: false` 顯示「準備中」。
 - 空 `streamUrl` 顯示「準備中」。
 
@@ -55,7 +53,7 @@
 
 - 按下後顯示「更新中...」且按鈕停用。
 - 成功後立即更新主畫面與快取。
-- 成功數量不包含 `noshow: true`。
+- 成功數量等於解析後的電台數量。
 - 下載、HTTP 或 JSON 失敗時保留目前清單。
 - 重複快速點擊不會建立多個並行更新。
 
@@ -78,6 +76,8 @@
 - 鎖定螢幕後繼續播放。
 - 媒體通知顯示正確電台名稱。
 - 通知／鎖定畫面控制可操作播放器。
+- App 位於背景時，點擊通知內容可回到既有主畫面且不建立重複 Activity。
+- 點擊通知播放控制按鈕只操作播放器，不會開啟 App。
 - Android 13 以上允許與拒絕通知權限皆不閃退。
 - Activity 重建時檢查畫面與實際播放狀態是否一致。
 - 從最近使用清單移除 App 後停止播放、服務與通知。
@@ -127,7 +127,7 @@
 
 ### 單元測試
 
-- JSON 預設值及 `noshow` 過濾。
+- JSON 必要欄位與選填欄位預設值。
 - 快取／assets／遠端優先順序。
 - 遠端失敗不覆蓋有效資料。
 - 最愛新增、刪除、清理與重排。

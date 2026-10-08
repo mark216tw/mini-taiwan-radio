@@ -24,7 +24,7 @@
 
 ### 外部相依
 
-- GitHub Pages 電台 JSON。
+- GitHub Gist 電台 JSON。
 - 各電台的 HTTP／HTTPS／HLS 串流伺服器。
 - Android 通知、前景服務、媒體控制與系統備份機制。
 
@@ -58,8 +58,6 @@ Station
 └── enabled: Boolean
 ```
 
-`noshow` 是資料匯入規則，不進入 `Station` model。解析時遇到 `noshow: true` 會直接排除。
-
 ### PlaybackUiState
 
 ```text
@@ -88,7 +86,7 @@ sequenceDiagram
     participant Repo as StationRepository
     participant SP as SharedPreferences
     participant Assets as stations.json
-    participant Remote as GitHub Pages
+    participant Remote as GitHub Gist
 
     UI->>Repo: load()
     Repo->>SP: 讀取 stations_json
@@ -101,7 +99,7 @@ sequenceDiagram
         else assets 不可用
             Repo->>Remote: GET stations.v1.json
             Remote-->>Repo: JSON
-            Repo->>Repo: 解析並過濾 noshow
+            Repo->>Repo: 解析電台資料
             Repo->>SP: 寫入完整 JSON
             Repo-->>UI: List<Station>
         end
@@ -115,14 +113,14 @@ sequenceDiagram
     actor User as 使用者
     participant Settings as SettingsScreen
     participant Repo as StationRepository
-    participant Remote as GitHub Pages
+    participant Remote as GitHub Gist
     participant SP as SharedPreferences
 
     User->>Settings: 點擊更新電台清單
     Settings->>Repo: refreshRemote()
     Repo->>Remote: GET stations.v1.json
     Remote-->>Repo: JSON
-    Repo->>Repo: parse() / 排除 noshow
+    Repo->>Repo: parse()
     Repo->>SP: 寫入原始 JSON
     Repo-->>Settings: Result<List<Station>>
     alt 成功
@@ -132,7 +130,7 @@ sequenceDiagram
     end
 ```
 
-顯示數量 `N` 使用解析後清單大小，因此不包含 `noshow: true`。
+顯示數量 `N` 使用解析後的完整電台清單大小。
 
 ## 8. 播放循序
 
@@ -154,6 +152,8 @@ sequenceDiagram
     Session-->>Activity: MediaController callback
     Activity-->>UI: 更新連線／播放／錯誤狀態
 ```
+
+MediaSession 設定指向 `MainActivity` 的 session activity PendingIntent。點擊媒體通知內容時，系統使用 clear-top／single-top flags 開啟或帶回既有 App task；通知控制按鈕仍直接操作播放器。
 
 ## 9. 最愛拖曳設計
 

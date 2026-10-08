@@ -1,5 +1,6 @@
 package com.mark216tw.minitaiwanradio
 
+import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
 import androidx.media3.common.PlaybackException
@@ -22,7 +23,17 @@ class PlaybackService : MediaSessionService() {
                 player.pause()
             }
         })
-        mediaSession = MediaSession.Builder(this, player).build()
+        val sessionActivity = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        mediaSession = MediaSession.Builder(this, player)
+            .setSessionActivity(sessionActivity)
+            .build()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

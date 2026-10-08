@@ -76,7 +76,6 @@ class StationRepository(private val context: Context) {
         return buildList {
             for (index in 0 until stations.length()) {
                 val item = stations.getJSONObject(index)
-                if (item.optBoolean("noshow", false)) continue
                 add(
                     Station(
                         id = item.getString("id"),
@@ -95,7 +94,7 @@ class StationRepository(private val context: Context) {
     }
 
     private companion object {
-        const val DATA_URL = "https://mark216tw.github.io/mini-taiwan-radio/data/stations.v1.json"
+        const val DATA_URL = "https://gist.githubusercontent.com/mark216tw/8de9db577e248f2bce47e2e3a31c02f8/raw"
         const val PREFERENCES = "station_cache"
         const val CACHE_KEY = "stations_json"
         const val FAVORITE_IDS_KEY = "favorite_station_ids"

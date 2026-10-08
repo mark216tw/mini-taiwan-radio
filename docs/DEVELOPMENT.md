@@ -70,7 +70,7 @@ gradle :app:assemblePrerelease
 app/build/outputs/apk/prerelease/app-prerelease.apk
 ```
 
-目前版本名稱為 `1.0.0-prerelease`，versionCode 為 1。
+目前版本名稱為 `1.0.0-prerelease.2`，versionCode 為 2。
 
 ## 4. 常用工作
 
@@ -117,7 +117,7 @@ app/src/main/
 4. 確認 JSON 可解析、ID 不重複、可見數量正確。
 5. 實機測試新增或修改的串流。
 
-GitHub Pages 預期從 `main` 分支的 `/docs` 發布。部署後應確認遠端 URL 回傳 HTTP 200 且內容為可解析的 JSON；未啟用 Pages 時，App 的手動更新會失敗並保留目前清單。
+App 從 GitHub Gist 取得遠端電台資料。更新 Gist 後，應確認 raw URL 回傳 HTTP 200、內容為可解析的 JSON，並同步專案資料快照與 APK assets。
 
 ## 7. 修改 UI
 
@@ -145,7 +145,7 @@ GitHub Pages 預期從 `main` 分支的 `/docs` 發布。部署後應確認遠�
 
 ### 電台清單未更新
 
-- 確認 GitHub Pages URL 可取得 JSON。
+- 確認 GitHub Gist raw URL 可取得 JSON。
 - 檢查 JSON 是否具有 `stations` array。
 - 清除 App 資料可移除既有 SharedPreferences 快取。
 - 注意 App 已有本機清單時不會自動下載，請使用設定頁手動更新。

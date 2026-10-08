@@ -2,7 +2,7 @@
 
 mini台灣電台是一款以 Kotlin、Jetpack Compose 與 AndroidX Media3 製作的 Android 網路收音機 App。它提供台灣電台清單、最愛排序、背景播放、系統媒體控制、深淺色模式及自訂主題色。
 
-> 目前版本為 `1.0.0-prerelease`。這是測試發行版本，不是正式上線版本。電台串流網址仍屬候選資料，正式發布前必須確認穩定性、官方來源與第三方使用授權。
+> 目前版本為 `1.0.0-prerelease.2`。這是測試發行版本，不是正式上線版本。電台串流網址仍屬候選資料，正式發布前必須確認穩定性、官方來源與第三方使用授權。
 
 ## 主要功能
 
@@ -10,7 +10,7 @@ mini台灣電台是一款以 Kotlin、Jetpack Compose 與 AndroidX Media3 製作
 - 使用 MediaSession 與前景服務支援背景及鎖定畫面播放。
 - 將電台加入最愛，並以長按拖曳調整最愛順序。
 - 使用本機快取與 APK 內建清單，在離線狀態仍可顯示電台資料。
-- 從設定頁手動更新 GitHub Pages 上的電台清單。
+- 從設定頁手動更新 GitHub Gist 上的電台清單。
 - 支援系統、淺色、深色顯示模式及自訂 Hue 主題色。
 - 使用迷你播放器顯示播放狀態並快速停止或定位目前電台。
 
@@ -69,14 +69,12 @@ app/build/outputs/apk/prerelease/app-prerelease.apk
 遠端權威清單：
 
 ```text
-https://mark216tw.github.io/mini-taiwan-radio/data/stations.v1.json
+https://gist.githubusercontent.com/mark216tw/8de9db577e248f2bce47e2e3a31c02f8/raw
 ```
 
-此網址需先將 GitHub Pages 設定為由 `main` 分支的 `/docs` 發布；未完成部署時會無法下載。正式發布前應確認網址回傳 HTTP 200 且內容可解析。
+專案快照與內建備援：
 
-對應檔案與內建備援：
-
-- GitHub Pages：`docs/data/stations.v1.json`
+- 專案資料快照：`docs/data/stations.v1.json`
 - APK assets：`app/src/main/assets/stations.json`
 
 App 執行時依序使用本機快取、APK 內建清單；兩者均沒有可顯示資料時才自動下載遠端清單。使用者也可在設定頁手動更新。

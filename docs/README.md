@@ -18,11 +18,12 @@
 
 ## 重要資料
 
-- 遠端發布來源：`data/stations.v1.json`
+- 遠端發布來源：`https://gist.githubusercontent.com/mark216tw/8de9db577e248f2bce47e2e3a31c02f8/raw`
+- 專案資料快照：`data/stations.v1.json`
 - App 圖示原稿：`design/app-icon.svg`
 - APK 內建電台清單：`../app/src/main/assets/stations.json`
 - Application ID：`com.mark216tw.minitaiwanradio`
-- 目前版本：`1.0.0-prerelease`（versionCode 1，測試發行版本）
+- 目前版本：`1.0.0-prerelease.2`（versionCode 2，測試發行版本）
 
 ## 文件維護原則
 
