@@ -8,11 +8,11 @@
       "network": "Hit FM",
       "frequency": "",
       "region": "全台",
-      "streamUrl": "",
+      "streamUrl": "http://202.39.43.67:1935/live/RA000036/chunklist.m3u8",
       "websiteUrl": "https://www.hitoradio.com/",
       "logoUrl": "",
-      "enabled": false,
-      "noshow": true
+      "enabled": true,
+      "noshow": false
     },
     {
       "id": "best-radio",
@@ -20,11 +20,11 @@
       "network": "好事聯播網",
       "frequency": "",
       "region": "全台",
-      "streamUrl": "",
+      "streamUrl": "http://202.39.43.67:1935/live/RA000013/chunklist.m3u8",
       "websiteUrl": "https://www.bestradio.com.tw/",
       "logoUrl": "",
-      "enabled": false,
-      "noshow": true
+      "enabled": true,
+      "noshow": false
     },
     {
       "id": "ufo-radio",
@@ -44,11 +44,11 @@
       "network": "POP Radio",
       "frequency": "FM 91.7",
       "region": "台北",
-      "streamUrl": "",
+      "streamUrl": "http://202.39.43.67:1935/live/RA000080/chunklist.m3u8",
       "websiteUrl": "https://www.pop917.com/",
       "logoUrl": "",
-      "enabled": false,
-      "noshow": true
+      "enabled": true,
+      "noshow": false
     },
     {
       "id": "bcc-pop",
@@ -56,11 +56,11 @@
       "network": "中國廣播公司",
       "frequency": "",
       "region": "全台",
-      "streamUrl": "https://n03.rcs.revma.com/aw9uqyxy2tzuv",
+      "streamUrl": "https://sonnykuo.appspot.com/bcc/?id=中廣流行網",
       "websiteUrl": "https://www.bcc.com.tw/",
       "logoUrl": "",
       "enabled": true,
-      "noshow": true
+      "noshow": false
     },
     {
       "id": "bcc-music",
@@ -68,11 +68,11 @@
       "network": "中國廣播公司",
       "frequency": "",
       "region": "全台",
-      "streamUrl": "https://n03.rcs.revma.com/ndk05tyy2tzuv",
+      "streamUrl": "https://sonnykuo.appspot.com/bcc/?id=中廣音樂網",
       "websiteUrl": "https://www.bcc.com.tw/",
       "logoUrl": "",
       "enabled": true,
-      "noshow": true
+      "noshow": false
     },
     {
       "id": "bcc-news",
@@ -80,11 +80,11 @@
       "network": "中國廣播公司",
       "frequency": "",
       "region": "全台",
-      "streamUrl": "https://n03.rcs.revma.com/78fm9wyy2tzuv",
+      "streamUrl": "https://sonnykuo.appspot.com/bcc/?id=中廣新聞網",
       "websiteUrl": "https://www.bcc.com.tw/",
       "logoUrl": "",
       "enabled": true,
-      "noshow": true
+      "noshow": false
     },
     {
       "id": "news98",
@@ -123,28 +123,16 @@
       "noshow": false
     },
     {
-      "id": "education-radio",
-      "name": "國立教育廣播電臺 (教育電台)",
-      "network": "教育電台",
-      "frequency": "",
-      "region": "全台",
-      "streamUrl": "",
-      "websiteUrl": "https://www.ner.gov.tw/",
-      "logoUrl": "",
-      "enabled": false,
-      "noshow": true
-    },
-    {
       "id": "voice-han",
       "name": "漢聲廣播電台",
       "network": "漢聲廣播電台",
       "frequency": "",
       "region": "全台",
-      "streamUrl": "",
+      "streamUrl": "http://202.39.43.67:1935/live/RA000076/chunklist.m3u8",
       "websiteUrl": "https://www.voh.com.tw/",
       "logoUrl": "",
-      "enabled": false,
-      "noshow": true
+      "enabled": true,
+      "noshow": false
     },
     {
       "id": "rti",
@@ -177,18 +165,6 @@
       "frequency": "FM 92.9",
       "region": "台中",
       "streamUrl": "http://fm929.cityfm.tw:8080/929.mp3",
-      "websiteUrl": "",
-      "logoUrl": "",
-      "enabled": true,
-      "noshow": false
-    },
-    {
-      "id": "m-radio",
-      "name": "全國廣播 (M-Radio)",
-      "network": "全國廣播",
-      "frequency": "FM 106.1",
-      "region": "台中",
-      "streamUrl": "https://n03.rcs.revma.com/044q61ha7a0uv",
       "websiteUrl": "",
       "logoUrl": "",
       "enabled": true,
@@ -248,11 +224,11 @@
       "network": "台北愛樂電台",
       "frequency": "",
       "region": "台北",
-      "streamUrl": "",
+      "streamUrl": "http://202.39.43.67:1935/live/RA000018/chunklist.m3u8",
       "websiteUrl": "",
       "logoUrl": "",
-      "enabled": false,
-      "noshow": true
+      "enabled": true,
+      "noshow": false
     },
     {
       "id": "classical-fm",
@@ -272,11 +248,11 @@
       "network": "Bravo FM",
       "frequency": "FM 91.3",
       "region": "台北",
-      "streamUrl": "",
-      "websiteUrl": "",
+      "streamUrl": "https://onair.bravo913.com.tw:9130/live.mp3",
+      "websiteUrl": "http://bravo913.com.tw/",
       "logoUrl": "",
-      "enabled": false,
-      "noshow": true
+      "enabled": true,
+      "noshow": false
     },
     {
       "id": "baodao-new-voice",
