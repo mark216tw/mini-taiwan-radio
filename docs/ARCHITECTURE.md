@@ -106,15 +106,18 @@ Repository 的執行時優先順序是「快取 → assets → 遠端」。遠�
 
 切台時沿用同一個 ExoPlayer，以新的 MediaItem 取代舊來源。
 
+睡眠定時器由 Activity 透過 `ACTION_SET_SLEEP_TIMER`／`ACTION_CANCEL_SLEEP_TIMER` 控制。`PlaybackService` 使用 monotonic elapsed realtime 與主執行緒 Handler 排程停止，並以只讀 StateFlow 提供結束時間；Compose 根據結束時間顯示倒數，因此 Activity 重組不會重設計時。
+
 ## 8. 播放服務生命週期
 
 - Service 建立時初始化 ExoPlayer 與 MediaSession。
 - MediaSession 使用 immutable PendingIntent 開啟 `MainActivity`，並以 clear-top／single-top flags 優先沿用既有 Activity。
 - 按 Home 或鎖定螢幕不會停止播放。
+- 睡眠定時器在 Service 內持續倒數；到期時停止播放器與服務。
 - App 內停止會呼叫 player stop、傳送 `ACTION_STOP` 並執行 `stopSelf()`。
 - 從最近使用清單移除時，`onTaskRemoved()` 停止播放器與服務。
 - Service 銷毀時釋放 MediaSession 與 ExoPlayer。
-- Activity 銷毀只釋放 MediaController，不直接停止背景播放。
+- Activity 銷毀只釋放 MediaController，不直接停止背景播放或睡眠定時器。
 
 ## 9. 本機儲存
 

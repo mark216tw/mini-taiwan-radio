@@ -23,7 +23,7 @@
 - App 圖示原稿：`design/app-icon.svg`
 - APK 內建電台清單：`../app/src/main/assets/stations.json`
 - Application ID：`com.mark216tw.minitaiwanradio`
-- 目前版本：`1.0.0-prerelease.2`（versionCode 2，測試發行版本）
+- 目前版本：`1.0.0-prerelease.3`（versionCode 3，測試發行版本）
 
 ## 文件維護原則
 

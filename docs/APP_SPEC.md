@@ -5,7 +5,7 @@
 - App 名稱：mini台灣電台
 - 平台：Android
 - Application ID：`com.mark216tw.minitaiwanradio`
-- 目前版本：`1.0.0-prerelease.2`（versionCode 2）
+- 目前版本：`1.0.0-prerelease.3`（versionCode 3）
 - 最低 Android 版本：Android 8.0（API 26）
 - Target SDK：API 35
 - 開發技術：Kotlin、Jetpack Compose、Material 3、AndroidX Media3
@@ -115,6 +115,17 @@ app/src/main/assets/stations.json
 - 不顯示 loading 圖示。
 - 點擊迷你播放器的電台區域，清單會捲動到目前播放的電台。
 - 迷你播放器會避開 Android 導覽列。
+
+### 5.1 睡眠定時器
+
+- 迷你播放器第一列在播放狀態右側顯示小型時鐘按鈕。
+- 設定定時器後，時鐘右側顯示剩餘時間。
+- 提供 5、10、15、30、45 分鐘及 1 小時選項。
+- 再次點擊時鐘可重新設定或取消定時器。
+- 切換電台時維持原倒數。
+- 手動停止、串流錯誤、從最近使用清單移除 App 或服務結束時取消定時器。
+- 時間到時停止播放、停止播放服務並移除通知。
+- 倒數由 `PlaybackService` 執行，按 Home 或鎖定螢幕後仍會繼續。
 
 ## 6. 最愛電台
 
@@ -255,4 +266,4 @@ gradle :app:assemblePrerelease
 app/build/outputs/apk/prerelease/app-prerelease.apk
 ```
 
-目前 Pre-release 版本為 `1.0.0-prerelease.2`，僅供測試，不代表正式上線版本。
+目前 Pre-release 版本為 `1.0.0-prerelease.3`，僅供測試，不代表正式上線版本。

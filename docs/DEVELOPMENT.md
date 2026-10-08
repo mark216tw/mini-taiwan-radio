@@ -70,7 +70,7 @@ gradle :app:assemblePrerelease
 app/build/outputs/apk/prerelease/app-prerelease.apk
 ```
 
-目前版本名稱為 `1.0.0-prerelease.2`，versionCode 為 2。
+目前版本名稱為 `1.0.0-prerelease.3`，versionCode 為 3。
 
 ## 4. 常用工作
 

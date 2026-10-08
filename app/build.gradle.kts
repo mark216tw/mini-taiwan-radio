@@ -12,8 +12,8 @@ android {
         applicationId = "com.mark216tw.minitaiwanradio"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.0-prerelease.2"
+        versionCode = 3
+        versionName = "1.0.0-prerelease.3"
     }
 
     buildTypes {

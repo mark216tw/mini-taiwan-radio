@@ -155,6 +155,8 @@ sequenceDiagram
 
 MediaSession 設定指向 `MainActivity` 的 session activity PendingIntent。點擊媒體通知內容時，系統使用 clear-top／single-top flags 開啟或帶回既有 App task；通知控制按鈕仍直接操作播放器。
 
+睡眠定時器由 `PlaybackService` 依 `SystemClock.elapsedRealtime()` 計算結束時間並排程。UI 只設定／取消定時器及格式化剩餘秒數；切台不改變結束時間，停止播放、播放錯誤或服務結束則清除計時。到期後 Service 停止 ExoPlayer 並執行 `stopSelf()`。
+
 ## 9. 最愛拖曳設計
 
 - 只有最愛項目註冊長按拖曳手勢。

@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -45,6 +46,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,6 +54,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -81,6 +86,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,12 +97,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 data class PlaybackUiState(
@@ -143,6 +151,8 @@ class MainActivity : ComponentActivity() {
                 playbackState = playbackState.copy(buffering = true, connecting = true)
             } else if (state == Player.STATE_READY) {
                 playbackState = playbackState.copy(buffering = false)
+            } else if (state == Player.STATE_IDLE && playbackState.stationId != null) {
+                playbackState = PlaybackUiState()
             }
         }
 
@@ -167,6 +177,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var displayMode by remember { mutableStateOf(uiPreferences.loadDisplayMode()) }
             var themeColor by remember { mutableStateOf(Color(uiPreferences.loadThemeColor())) }
+            val sleepTimerEndElapsedRealtime by PlaybackService.sleepTimerEndElapsedRealtime.collectAsStateWithLifecycle()
             MiniTaiwanRadioTheme(displayMode, themeColor) {
                 AppContent(
                     stationRepository = stationRepository,
@@ -184,6 +195,9 @@ class MainActivity : ComponentActivity() {
                     },
                     onPlay = ::play,
                     onStop = ::stopPlayback,
+                    sleepTimerEndElapsedRealtime = sleepTimerEndElapsedRealtime,
+                    onSetSleepTimer = ::setSleepTimer,
+                    onCancelSleepTimer = ::cancelSleepTimer,
                 )
             }
         }
@@ -228,6 +242,18 @@ class MainActivity : ComponentActivity() {
         playbackState = PlaybackUiState()
     }
 
+    private fun setSleepTimer(minutes: Int) {
+        startService(
+            Intent(this, PlaybackService::class.java)
+                .setAction(PlaybackService.ACTION_SET_SLEEP_TIMER)
+                .putExtra(PlaybackService.EXTRA_SLEEP_TIMER_DURATION_MILLIS, minutes * 60_000L),
+        )
+    }
+
+    private fun cancelSleepTimer() {
+        startService(Intent(this, PlaybackService::class.java).setAction(PlaybackService.ACTION_CANCEL_SLEEP_TIMER))
+    }
+
     override fun onDestroy() {
         mediaController?.removeListener(playerListener)
         mediaController?.release()
@@ -246,6 +272,9 @@ private fun AppContent(
     onThemeColorChange: (Color) -> Unit,
     onPlay: (Station) -> Unit,
     onStop: () -> Unit,
+    sleepTimerEndElapsedRealtime: Long?,
+    onSetSleepTimer: (Int) -> Unit,
+    onCancelSleepTimer: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     var showSettings by remember { mutableStateOf(false) }
@@ -304,6 +333,9 @@ private fun AppContent(
             playbackState = playbackState,
             onPlay = onPlay,
             onStop = onStop,
+            sleepTimerEndElapsedRealtime = sleepTimerEndElapsedRealtime,
+            onSetSleepTimer = onSetSleepTimer,
+            onCancelSleepTimer = onCancelSleepTimer,
             onSettings = { showSettings = true },
         )
     }
@@ -318,6 +350,9 @@ private fun RadioHome(
     playbackState: PlaybackUiState,
     onPlay: (Station) -> Unit,
     onStop: () -> Unit,
+    sleepTimerEndElapsedRealtime: Long?,
+    onSetSleepTimer: (Int) -> Unit,
+    onCancelSleepTimer: () -> Unit,
     onSettings: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -397,7 +432,14 @@ private fun RadioHome(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = {
                 if (playbackState.stationName != null) {
-                    MiniPlayer(state = playbackState, onStop = onStop, onClick = ::scrollToPlaying)
+                    MiniPlayer(
+                        state = playbackState,
+                        sleepTimerEndElapsedRealtime = sleepTimerEndElapsedRealtime,
+                        onSetSleepTimer = onSetSleepTimer,
+                        onCancelSleepTimer = onCancelSleepTimer,
+                        onStop = onStop,
+                        onClick = ::scrollToPlaying,
+                    )
                 }
             },
         ) { innerPadding ->
@@ -467,7 +509,24 @@ private fun Header(onSettings: () -> Unit) {
 }
 
 @Composable
-private fun MiniPlayer(state: PlaybackUiState, onStop: () -> Unit, onClick: () -> Unit) {
+private fun MiniPlayer(
+    state: PlaybackUiState,
+    sleepTimerEndElapsedRealtime: Long?,
+    onSetSleepTimer: (Int) -> Unit,
+    onCancelSleepTimer: () -> Unit,
+    onStop: () -> Unit,
+    onClick: () -> Unit,
+) {
+    var showSleepTimerSheet by remember { mutableStateOf(false) }
+    val remainingSeconds = rememberRemainingSeconds(sleepTimerEndElapsedRealtime)
+    if (showSleepTimerSheet) {
+        SleepTimerSheet(
+            isActive = remainingSeconds != null,
+            onSet = onSetSleepTimer,
+            onCancel = onCancelSleepTimer,
+            onDismiss = { showSleepTimerSheet = false },
+        )
+    }
     Surface(
         modifier = Modifier.navigationBarsPadding().clickable(onClick = onClick),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -488,13 +547,93 @@ private fun MiniPlayer(state: PlaybackUiState, onStop: () -> Unit, onClick: () -
                         },
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 12.sp,
+                        modifier = Modifier.weight(1f, fill = false),
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
+                    Spacer(Modifier.width(4.dp))
+                    IconButton(modifier = Modifier.size(36.dp), onClick = { showSleepTimerSheet = true }) {
+                        Icon(
+                            Icons.Filled.Timer,
+                            contentDescription = "設定睡眠定時器",
+                            modifier = Modifier.size(17.dp),
+                            tint = if (remainingSeconds != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                    }
+                    remainingSeconds?.let {
+                        Text(
+                            formatSleepTimer(it),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                        )
+                    }
                 }
                 Text(state.stationName.orEmpty(), fontWeight = FontWeight.Bold, maxLines = 1)
             }
             IconButton(modifier = Modifier.size(38.dp).background(MaterialTheme.colorScheme.primary, CircleShape), onClick = onStop) {
                 Icon(Icons.Filled.Stop, contentDescription = "停止播放", tint = MaterialTheme.colorScheme.onPrimary)
+            }
+        }
+    }
+}
+
+@Composable
+private fun rememberRemainingSeconds(endElapsedRealtime: Long?): Long? {
+    var now by remember(endElapsedRealtime) { mutableStateOf(SystemClock.elapsedRealtime()) }
+    LaunchedEffect(endElapsedRealtime) {
+        while (endElapsedRealtime != null && now < endElapsedRealtime) {
+            now = SystemClock.elapsedRealtime()
+            delay(1_000)
+        }
+    }
+    return endElapsedRealtime
+        ?.let { ((it - now).coerceAtLeast(0L) + 999L) / 1_000L }
+        ?.takeIf { it > 0L }
+}
+
+private fun formatSleepTimer(totalSeconds: Long): String {
+    val hours = totalSeconds / 3_600
+    val minutes = (totalSeconds % 3_600) / 60
+    val seconds = totalSeconds % 60
+    return if (hours > 0) "%d:%02d:%02d".format(hours, minutes, seconds) else "%02d:%02d".format(minutes, seconds)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SleepTimerSheet(
+    isActive: Boolean,
+    onSet: (Int) -> Unit,
+    onCancel: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 24.dp)) {
+            Text("睡眠定時器", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text("播放將在指定時間後自動停止", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+            Spacer(Modifier.height(16.dp))
+            listOf(
+                listOf(5 to "5 分鐘", 10 to "10 分鐘"),
+                listOf(15 to "15 分鐘", 30 to "30 分鐘"),
+                listOf(45 to "45 分鐘", 60 to "1 小時"),
+            ).forEach { options ->
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    options.forEach { (minutes, label) ->
+                        OutlinedButton(
+                            onClick = { onSet(minutes); onDismiss() },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Text(label)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+            }
+            if (isActive) {
+                TextButton(onClick = { onCancel(); onDismiss() }, modifier = Modifier.align(Alignment.End)) {
+                    Text("取消定時器")
+                }
             }
         }
     }
