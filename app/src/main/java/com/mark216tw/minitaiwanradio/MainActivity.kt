@@ -86,6 +86,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -761,6 +762,24 @@ private fun SettingsScreen(
             }
             updateResult?.let {
                 Text(it, color = if (it.startsWith("更新成功")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, fontSize = 13.sp)
+            }
+            Spacer(Modifier.height(16.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    "版本 ${BuildConfig.VERSION_NAME}",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    "Build ${BuildConfig.BUILD_TIMESTAMP_UTC}.${BuildConfig.VERSION_CODE}",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                )
             }
         }
     }

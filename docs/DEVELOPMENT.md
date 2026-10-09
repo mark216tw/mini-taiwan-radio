@@ -72,6 +72,24 @@ app/build/outputs/apk/prerelease/app-prerelease.apk
 
 目前版本名稱為 `1.0.0-prerelease.3`，versionCode 為 3。
 
+### Build 編碼
+
+Gradle 每次建置時以 UTC 產生 `yyyyMMdd.HHmmss` 格式的時間，寫入 `BuildConfig.BUILD_TIMESTAMP_UTC`。設定頁顯示：
+
+```text
+版本 <versionName>
+Build <UTC日期>.<UTC時間>.<versionCode>
+```
+
+例如：
+
+```text
+版本 1.0.0-prerelease.3
+Build 20260909.153012.3
+```
+
+Build 時間不使用開發電腦的本地時區。每次重新執行 Gradle 建置，Build 編碼都會更新。
+
 ## 4. 常用工作
 
 ```powershell

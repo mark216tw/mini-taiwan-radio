@@ -1,8 +1,15 @@
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 }
+
+val buildTimestampUtc = ZonedDateTime.now(ZoneOffset.UTC)
+    .format(DateTimeFormatter.ofPattern("yyyyMMdd.HHmmss"))
 
 android {
     namespace = "com.mark216tw.minitaiwanradio"
@@ -14,6 +21,7 @@ android {
         targetSdk = 35
         versionCode = 3
         versionName = "1.0.0-prerelease.3"
+        buildConfigField("String", "BUILD_TIMESTAMP_UTC", "\"$buildTimestampUtc\"")
     }
 
     buildTypes {
@@ -30,6 +38,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 

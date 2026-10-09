@@ -136,7 +136,13 @@ Repository 的執行時優先順序是「快取 → assets → 遠端」。遠�
 - Compose 使用 `rememberCoroutineScope()` 執行初始載入、手動更新、Snackbar 與清單捲動。
 - ExoPlayer 與 MediaSession 由 `PlaybackService` 管理。
 
-## 11. 目前架構限制
+## 11. 建置資訊
+
+- Gradle 在設定階段以 UTC 產生 `yyyyMMdd.HHmmss` 格式的建置時間。
+- 建置時間透過 `BuildConfig.BUILD_TIMESTAMP_UTC` 提供給 App。
+- 設定頁直接使用 `BuildConfig.VERSION_NAME`、`VERSION_CODE` 與 UTC 建置時間組成版本資訊，不另外硬編碼版本。
+
+## 12. 目前架構限制
 
 - UI 與應用邏輯集中在 `MainActivity.kt`，功能擴充後可考慮拆分畫面與 ViewModel。
 - Repository 直接建立網路連線，尚未抽象 HTTP client，單元測試較困難。

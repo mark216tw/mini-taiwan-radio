@@ -200,6 +200,15 @@ app/src/main/assets/stations.json
 - 狀態列及導覽列圖示會依淺色／深色模式調整。
 - 主畫面與設定頁使用安全 Insets，內容不與系統列重疊。
 
+### 8.5 版本資訊
+
+- 設定頁最下方置中顯示 App 版本與 Build 編碼。
+- 版本直接使用 APK 的完整 `versionName`，例如「版本 1.0.0-prerelease.3」。
+- Build 編碼格式為 UTC 建置日期、UTC 建置時間與 Version Code：`yyyyMMdd.HHmmss.versionCode`。
+- 顯示範例為「Build 20260909.153012.3」。
+- 版本資訊會隨設定頁內容一起捲動，不固定於畫面底部。
+- 版本資訊使用次要文字色，並避開 Android 導覽列。
+
 ## 9. App 圖示
 
 - 風格：活潑、友善、粗線條卡通工具圖示。
