@@ -70,7 +70,7 @@ gradle :app:assemblePrerelease
 app/build/outputs/apk/prerelease/app-prerelease.apk
 ```
 
-目前版本名稱為 `1.0.0-prerelease.3`，versionCode 為 3。
+目前版本名稱為 `1.0.0-prerelease.4`，versionCode 為 4。
 
 ### Build 編碼
 
@@ -84,8 +84,8 @@ Build <UTC日期>.<UTC時間>.<versionCode>
 例如：
 
 ```text
-版本 1.0.0-prerelease.3
-Build 20260909.153012.3
+版本 1.0.0-prerelease.4
+Build 20260909.153012.4
 ```
 
 Build 時間不使用開發電腦的本地時區。每次重新執行 Gradle 建置，Build 編碼都會更新。

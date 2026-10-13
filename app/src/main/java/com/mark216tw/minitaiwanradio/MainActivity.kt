@@ -46,7 +46,8 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -555,8 +556,8 @@ private fun MiniPlayer(
                     Spacer(Modifier.width(4.dp))
                     IconButton(modifier = Modifier.size(36.dp), onClick = { showSleepTimerSheet = true }) {
                         Icon(
-                            Icons.Filled.Timer,
-                            contentDescription = "設定睡眠定時器",
+                            if (remainingSeconds != null) Icons.Outlined.Timer else Icons.Outlined.TimerOff,
+                            contentDescription = if (remainingSeconds != null) "睡眠定時器已啟用" else "睡眠定時器未啟用",
                             modifier = Modifier.size(17.dp),
                             tint = if (remainingSeconds != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer,
                         )

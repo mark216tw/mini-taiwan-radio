@@ -19,8 +19,8 @@ android {
         applicationId = "com.mark216tw.minitaiwanradio"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0.0-prerelease.3"
+        versionCode = 4
+        versionName = "1.0.0-prerelease.4"
         buildConfigField("String", "BUILD_TIMESTAMP_UTC", "\"$buildTimestampUtc\"")
     }
 

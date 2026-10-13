@@ -5,7 +5,7 @@
 - App 名稱：mini台灣電台
 - 平台：Android
 - Application ID：`com.mark216tw.minitaiwanradio`
-- 目前版本：`1.0.0-prerelease.3`（versionCode 3）
+- 目前版本：`1.0.0-prerelease.4`（versionCode 4）
 - 最低 Android 版本：Android 8.0（API 26）
 - Target SDK：API 35
 - 開發技術：Kotlin、Jetpack Compose、Material 3、AndroidX Media3
@@ -203,9 +203,9 @@ app/src/main/assets/stations.json
 ### 8.5 版本資訊
 
 - 設定頁最下方置中顯示 App 版本與 Build 編碼。
-- 版本直接使用 APK 的完整 `versionName`，例如「版本 1.0.0-prerelease.3」。
+- 版本直接使用 APK 的完整 `versionName`，例如「版本 1.0.0-prerelease.4」。
 - Build 編碼格式為 UTC 建置日期、UTC 建置時間與 Version Code：`yyyyMMdd.HHmmss.versionCode`。
-- 顯示範例為「Build 20260909.153012.3」。
+- 顯示範例為「Build 20260909.153012.4」。
 - 版本資訊會隨設定頁內容一起捲動，不固定於畫面底部。
 - 版本資訊使用次要文字色，並避開 Android 導覽列。
 
@@ -275,4 +275,4 @@ gradle :app:assemblePrerelease
 app/build/outputs/apk/prerelease/app-prerelease.apk
 ```
 
-目前 Pre-release 版本為 `1.0.0-prerelease.3`，僅供測試，不代表正式上線版本。
+目前 Pre-release 版本為 `1.0.0-prerelease.4`，僅供測試，不代表正式上線版本。

@@ -29,7 +29,7 @@
 - App 啟動不閃退。
 - 檢查輸出 `app/build/outputs/apk/debug/app-debug.apk`。
 - 檢查測試發行輸出 `app/build/outputs/apk/prerelease/app-prerelease.apk`。
-- 確認 Pre-release APK 版本為 `1.0.0-prerelease.3`，並使用 Debug 憑證簽署。
+- 確認 Pre-release APK 版本為 `1.0.0-prerelease.4`，並使用 Debug 憑證簽署。
 
 ## 4. 電台資料
 
