@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -59,8 +60,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
@@ -376,9 +379,21 @@ private fun RadioHome(
 
     fun toggleFavorite(station: Station) {
         val added = station.id !in favoriteIds
+        val previous = favoriteIds
         favoriteIds = if (added) favoriteIds + station.id else favoriteIds.filterNot { it == station.id }
         repository.saveFavoriteIds(favoriteIds)
-        if (added) scope.launch { snackbarHostState.showSnackbar("${station.name}已加入最愛") }
+        val message = if (added) "${station.name}已加入最愛" else "${station.name}已移除最愛"
+        scope.launch {
+            val result = snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = "復原",
+                duration = SnackbarDuration.Short,
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                favoriteIds = previous
+                repository.saveFavoriteIds(previous)
+            }
+        }
     }
 
     fun moveFavorite(id: String, direction: Int): Boolean {
@@ -419,11 +434,44 @@ private fun RadioHome(
     }
 
     val favoriteSet = favoriteIds.toSet()
-    val sortedStations = favoriteIds.mapNotNull { id -> stations.firstOrNull { it.id == id } } +
-        stations.filter { it.id !in favoriteSet }
+    val favoriteStations = favoriteIds.mapNotNull { id -> stations.firstOrNull { it.id == id } }
+    val otherStations = stations.filter { it.id !in favoriteSet }
+    val sortedStations = favoriteStations + otherStations
     fun scrollToPlaying() {
+        val favCount = favoriteStations.size
         val index = sortedStations.indexOfFirst { it.id == playbackState.stationId }
-        if (index >= 0) scope.launch { listState.animateScrollToItem(index) }
+        if (index < 0) return
+        val lazyIndex = if (index < favCount) {
+            if (favCount > 0) 1 + index else index
+        } else {
+            (if (favCount > 0) 2 else 0) + index
+        }
+        scope.launch { listState.animateScrollToItem(lazyIndex) }
+    }
+
+    val renderStation: @Composable LazyItemScope.(Station) -> Unit = { station ->
+        StationCard(
+            itemModifier = if (station.id == draggingId) Modifier else Modifier.animateItem(),
+            station = station,
+            isPlaying = playbackState.stationId == station.id && playbackState.playing,
+            isFavorite = station.id in favoriteSet,
+            isDragging = station.id == draggingId,
+            dragOffset = if (station.id == draggingId) dragOffset else 0f,
+            onPlay = { onPlay(station) },
+            onStop = onStop,
+            onHeightChanged = { itemHeights[station.id] = it },
+            onDragStart = {
+                if (station.id in favoriteSet) {
+                    draggingId = station.id
+                    dragOffset = 0f
+                }
+            },
+            onDrag = ::onDragDelta,
+            onDragEnd = {
+                draggingId = null
+                dragOffset = 0f
+            },
+        )
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -436,6 +484,10 @@ private fun RadioHome(
                 if (playbackState.stationName != null) {
                     MiniPlayer(
                         state = playbackState,
+                        isFavorite = playbackState.stationId != null && playbackState.stationId in favoriteSet,
+                        onToggleFavorite = {
+                            playbackState.stationId?.let { id -> stations.firstOrNull { it.id == id }?.let { toggleFavorite(it) } }
+                        },
                         sleepTimerEndElapsedRealtime = sleepTimerEndElapsedRealtime,
                         onSetSleepTimer = onSetSleepTimer,
                         onCancelSleepTimer = onCancelSleepTimer,
@@ -459,31 +511,14 @@ private fun RadioHome(
                             contentPadding = PaddingValues(bottom = 12.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            items(sortedStations, key = { it.id }) { station ->
-                                StationCard(
-                                    itemModifier = if (station.id == draggingId) Modifier else Modifier.animateItem(),
-                                    station = station,
-                                    isPlaying = playbackState.stationId == station.id && playbackState.playing,
-                                    isFavorite = station.id in favoriteSet,
-                                    isDragging = station.id == draggingId,
-                                    dragOffset = if (station.id == draggingId) dragOffset else 0f,
-                                    onPlay = { onPlay(station) },
-                                    onStop = onStop,
-                                    onToggleFavorite = { toggleFavorite(station) },
-                                    onHeightChanged = { itemHeights[station.id] = it },
-                                    onDragStart = {
-                                        if (station.id in favoriteSet) {
-                                            draggingId = station.id
-                                            dragOffset = 0f
-                                        }
-                                    },
-                                    onDrag = ::onDragDelta,
-                                    onDragEnd = {
-                                        draggingId = null
-                                        dragOffset = 0f
-                                    },
-                                )
+                            if (favoriteStations.isNotEmpty()) {
+                                item(key = "section:favorites") { SectionHeader("我的最愛", showHeart = true) }
+                                items(favoriteStations, key = { it.id }) { renderStation(it) }
+                                if (otherStations.isNotEmpty()) {
+                                    item(key = "section:all") { SectionHeader("所有電台", showHeart = false) }
+                                }
                             }
+                            items(otherStations, key = { it.id }) { renderStation(it) }
                         }
                     }
                 }
@@ -511,8 +546,29 @@ private fun Header(onSettings: () -> Unit) {
 }
 
 @Composable
+private fun SectionHeader(title: String, showHeart: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        if (showHeart) {
+            Icon(
+                Icons.Filled.Favorite,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.colorScheme.primary)
+    }
+}
+
+@Composable
 private fun MiniPlayer(
     state: PlaybackUiState,
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
     sleepTimerEndElapsedRealtime: Long?,
     onSetSleepTimer: (Int) -> Unit,
     onCancelSleepTimer: () -> Unit,
@@ -531,14 +587,14 @@ private fun MiniPlayer(
     }
     Surface(
         modifier = Modifier.navigationBarsPadding().clickable(onClick = onClick),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        tonalElevation = 8.dp,
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        tonalElevation = 0.dp,
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("現正播放", color = MaterialTheme.colorScheme.primary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("現正播放", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(10.dp))
                     Text(
                         when {
@@ -547,7 +603,7 @@ private fun MiniPlayer(
                             state.playing -> "播放中"
                             else -> ""
                         },
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
                         fontSize = 12.sp,
                         modifier = Modifier.weight(1f, fill = false),
                         maxLines = 1,
@@ -559,23 +615,33 @@ private fun MiniPlayer(
                             if (remainingSeconds != null) Icons.Outlined.Timer else Icons.Outlined.TimerOff,
                             contentDescription = if (remainingSeconds != null) "睡眠定時器已啟用" else "睡眠定時器未啟用",
                             modifier = Modifier.size(17.dp),
-                            tint = if (remainingSeconds != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer,
+                            tint = if (remainingSeconds != null) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
                         )
                     }
                     remainingSeconds?.let {
                         Text(
                             formatSleepTimer(it),
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
                         )
                     }
                 }
-                Text(state.stationName.orEmpty(), fontWeight = FontWeight.Bold, maxLines = 1)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(modifier = Modifier.size(32.dp), onClick = onToggleFavorite) {
+                        Icon(
+                            if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (isFavorite) "移除最愛" else "加入最愛",
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                    Text(state.stationName.orEmpty(), fontWeight = FontWeight.Bold, fontSize = 17.sp, color = MaterialTheme.colorScheme.onPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                }
             }
-            IconButton(modifier = Modifier.size(38.dp).background(MaterialTheme.colorScheme.primary, CircleShape), onClick = onStop) {
-                Icon(Icons.Filled.Stop, contentDescription = "停止播放", tint = MaterialTheme.colorScheme.onPrimary)
+            IconButton(modifier = Modifier.size(42.dp).background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f), CircleShape), onClick = onStop) {
+                Icon(Icons.Filled.Stop, contentDescription = "停止播放", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(22.dp))
             }
         }
     }
@@ -651,25 +717,29 @@ private fun StationCard(
     dragOffset: Float,
     onPlay: () -> Unit,
     onStop: () -> Unit,
-    onToggleFavorite: () -> Unit,
     onHeightChanged: (Int) -> Unit,
     onDragStart: () -> Unit,
     onDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
 ) {
     Card(
-        modifier = itemModifier.fillMaxWidth().onSizeChanged { onHeightChanged(it.height) }.graphicsLayer { scaleX = if (isDragging) 1.03f else 1f; scaleY = if (isDragging) 1.03f else 1f }.zIndex(if (isDragging) 1f else 0f).offset { IntOffset(0, if (isDragging) dragOffset.roundToInt() else 0) }.then(
-            if (isFavorite) Modifier.pointerInput(station.id) {
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { onDragStart() },
-                    onDragEnd = onDragEnd,
-                    onDragCancel = onDragEnd,
-                    onDrag = { change, amount -> change.consume(); onDrag(amount.y) },
-                )
-            } else Modifier,
-        ),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (isDragging) 10.dp else 1.dp),
+        modifier = itemModifier.fillMaxWidth()
+            .onSizeChanged { onHeightChanged(it.height) }
+            .graphicsLayer { scaleX = if (isDragging) 1.03f else 1f; scaleY = if (isDragging) 1.03f else 1f }
+            .zIndex(if (isDragging) 1f else 0f)
+            .offset { IntOffset(0, if (isDragging) dragOffset.roundToInt() else 0) }
+            .then(
+                if (isFavorite) Modifier.pointerInput(station.id) {
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = { onDragStart() },
+                        onDragEnd = onDragEnd,
+                        onDragCancel = onDragEnd,
+                        onDrag = { change, amount -> change.consume(); onDrag(amount.y) },
+                    )
+                } else Modifier,
+            ),
+        shape = RoundedCornerShape(26.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isDragging) 12.dp else 4.dp),
         border = if (isPlaying) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
@@ -682,17 +752,12 @@ private fun StationCard(
                 Text(station.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 Text(listOf(station.network, station.frequency, station.region).filter { it.isNotBlank() }.joinToString(" · "), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp, maxLines = 1)
             }
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                IconButton(modifier = Modifier.size(36.dp), onClick = onToggleFavorite) {
-                    Icon(if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, contentDescription = if (isFavorite) "取消最愛" else "加入最愛", tint = if (isFavorite) Color(0xFFFF8A8A) else MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                if (station.streamUrl.isBlank() || !station.enabled) {
-                    Text("準備中", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
-                } else {
-                    IconButton(modifier = Modifier.size(36.dp), onClick = if (isPlaying) onStop else onPlay) {
-                        Box(modifier = Modifier.size(32.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape), contentAlignment = Alignment.Center) {
-                            Icon(if (isPlaying) Icons.Filled.Stop else Icons.Filled.PlayArrow, contentDescription = if (isPlaying) "停止播放" else "播放", tint = MaterialTheme.colorScheme.primary)
-                        }
+            if (station.streamUrl.isBlank() || !station.enabled) {
+                Text("準備中", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, modifier = Modifier.padding(horizontal = 12.dp))
+            } else {
+                IconButton(modifier = Modifier.size(48.dp), onClick = if (isPlaying) onStop else onPlay) {
+                    Box(modifier = Modifier.size(44.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape), contentAlignment = Alignment.Center) {
+                        Icon(if (isPlaying) Icons.Filled.Stop else Icons.Filled.PlayArrow, contentDescription = if (isPlaying) "停止播放" else "播放", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
                     }
                 }
             }

@@ -36,7 +36,7 @@
 |---|---|---|
 | 電台目錄 | 快取、assets、遠端 JSON | 可顯示的 `Station` 清單 |
 | 清單 UI | Station、最愛與播放狀態 | 卡片、控制按鈕與狀態文字 |
-| 最愛管理 | 愛心點擊、拖曳手勢 | 有序 ID、Snackbar、本機儲存 |
+| 最愛管理 | 迷你播放器愛心、拖曳手勢 | 有序 ID、Snackbar、本機儲存 |
 | 播放控制 | Station 與停止命令 | MediaItem、播放狀態、錯誤 |
 | 背景播放 | MediaSession／Service 生命週期 | 通知、鎖定畫面控制、持續播放 |
 | 外觀設定 | 模式、預設色、Hue | Material 3 色彩與系統列樣式 |
